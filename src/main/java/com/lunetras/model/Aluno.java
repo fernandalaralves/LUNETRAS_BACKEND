@@ -49,17 +49,6 @@ public class Aluno {
     public void setTurma(Turma turma) {
         this.turma = turma;
     }
-    //um aluno não pode ter mais de uma avaliação no mesmo bimestre
-    public void adicionarAvaliacao(AvaliacaoPsicogenetica avaliacao) {
-        for (AvaliacaoPsicogenetica a: avaliacoes) {
-            if (a.getBimestre() == avaliacao.getBimestre()) {
-                throw new IllegalArgumentException(
-                        "O aluno já possui uma avaliação para este bimestre."
-                );
-            }
-        }
-        avaliacoes.add(avaliacao);
-    }
 }
 
 
