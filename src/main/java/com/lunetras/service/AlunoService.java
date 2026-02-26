@@ -1,12 +1,11 @@
 package com.lunetras.service;
 
 import com.lunetras.model.Aluno;
-import com.lunetras.model.AvaliacaoPsicogenetica;
-import com.lunetras.model.Turma;
 import com.lunetras.repository.AlunoRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 public class AlunoService {
 
@@ -18,12 +17,14 @@ public class AlunoService {
 
     // Cadastrar um novo aluno
     public Aluno cadastrarAluno(Aluno aluno) {
+       validarAluno(aluno);
         return alunoRepository.save(aluno);
     }
 
     // Buscar aluno por ID
-    public Optional<Aluno> buscarPorId(Long id) {
-        return alunoRepository.findById(id);
+    public Aluno buscarPorId(Long id) {
+        return alunoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado"));
     }
 
     // Listar todos os alunos
@@ -32,27 +33,35 @@ public class AlunoService {
     }
 
     // Associar aluno a uma turma
-    public void associarTurma(Long alunoId, Turma turma) {
-        Aluno aluno = alunoRepository.findById(alunoId)
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado"));
+    public Aluno atualizarAluno(Long id, Aluno alunoAtualizado) {
+        Aluno alunoExistente = buscarPorId(id);
 
-        aluno.setTurma(turma);
-        alunoRepository.save(aluno);
+        alunoExistente.setNome(alunoAtualizado.getNome());
+        alunoExistente.setDataNascimento(alunoAtualizado.getDataNascimento());
+        alunoExistente.setTurma(alunoAtualizado.getTurma());
+
+        validarAluno(alunoExistente);
+
+        return alunoRepository.save(alunoExistente);
     }
 
-    // Regra de negócio: adicionar avaliação ao aluno
-    public void adicionarAvaliacao(Long alunoId, AvaliacaoPsicogenetica avaliacao) {
+    // Regra de negócio
+   private void validarAluno(Aluno aluno) {
 
-        Aluno aluno = alunoRepository.findById(alunoId)
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado"));
+        if(aluno == null) {
+            throw new IllegalArgumentException("Aluno não pode ser nulo");
+        }
 
-        /*
-         * A regra "um aluno não pode ter mais de uma avaliação no mesmo bimestre"
-         * está protegida dentro da entidade Aluno.
-         * O Service apenas coordena o fluxo.
-         */
-        aluno.adicionarAvaliacao(avaliacao);
+        if(aluno.getNome() == null || aluno.getNome().isBlank()) {
+            throw new IllegalArgumentException("Nome do aluno é obrigatório");
+        }
 
-        alunoRepository.save(aluno);
+        if (aluno.getDataNascimento() == null) {
+            throw new IllegalArgumentException("Data de nascimento é obrigatória");
+        }
+
+        if (aluno.getTurma() == null) {
+            throw new IllegalArgumentException("O aluno deve estar vinculado a uma turma");
+        }
     }
 }
