@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+@Service
 public class AlunoService {
 
     private final AlunoRepository alunoRepository;
@@ -32,17 +32,12 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
-    // Associar aluno a uma turma
-    public Aluno atualizarAluno(Long id, Aluno alunoAtualizado) {
-        Aluno alunoExistente = buscarPorId(id);
-
-        alunoExistente.setNome(alunoAtualizado.getNome());
-        alunoExistente.setDataNascimento(alunoAtualizado.getDataNascimento());
-        alunoExistente.setTurma(alunoAtualizado.getTurma());
-
-        validarAluno(alunoExistente);
-
-        return alunoRepository.save(alunoExistente);
+   //remove aluno
+    public void remover (Long id) {
+        if (!alunoRepository.existsById(id)) {
+            throw new IllegalArgumentException("Aluno não encontrado");
+        }
+        alunoRepository.deleteById(id);
     }
 
     // Regra de negócio
@@ -58,10 +53,6 @@ public class AlunoService {
 
         if (aluno.getDataNascimento() == null) {
             throw new IllegalArgumentException("Data de nascimento é obrigatória");
-        }
-
-        if (aluno.getTurma() == null) {
-            throw new IllegalArgumentException("O aluno deve estar vinculado a uma turma");
         }
     }
 }
