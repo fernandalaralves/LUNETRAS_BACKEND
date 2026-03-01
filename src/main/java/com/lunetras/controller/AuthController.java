@@ -1,4 +1,4 @@
-package controller;
+package com.lunetras.controller;
 
 import com.lunetras.dto.LoginRequest;
 import com.lunetras.dto.LoginResponse;

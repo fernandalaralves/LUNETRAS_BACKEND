@@ -1,10 +1,13 @@
 package com.lunetras.service;
 
+import com.lunetras.dto.AlunoRequest;
+import com.lunetras.dto.AlunoResponse;
 import com.lunetras.model.Aluno;
 import com.lunetras.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AlunoService {
@@ -15,44 +18,58 @@ public class AlunoService {
         this.alunoRepository = alunoRepository;
     }
 
-    // Cadastrar um novo aluno
-    public Aluno cadastrarAluno(Aluno aluno) {
-       validarAluno(aluno);
-        return alunoRepository.save(aluno);
+    public AlunoResponse criar(AlunoRequest dto) {
+        validar(dto);
+
+        Aluno aluno = new Aluno();
+        aluno.setNome(dto.getNome());
+        aluno.setEmail(dto.getEmail());
+        aluno.setDataNascimento(dto.getDataNascimento());
+
+        Aluno salvo = alunoRepository.save(aluno);
+        return toResponse(salvo);
     }
 
-    // Buscar aluno por ID
-    public Aluno buscarPorId(Long id) {
-        return alunoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado"));
+    public List<AlunoResponse> listarTodos() {
+        return alunoRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
-    // Listar todos os alunos
-    public List<Aluno> listarTodos() {
-        return alunoRepository.findAll();
+    public AlunoResponse buscarPorId(Long id) {
+        Aluno aluno = alunoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+        return toResponse(aluno);
     }
 
-   //remove aluno
-    public void remover (Long id) {
+    public void remover(Long id) {
         if (!alunoRepository.existsById(id)) {
-            throw new IllegalArgumentException("Aluno não encontrado");
+            throw new RuntimeException("Aluno não encontrado");
         }
         alunoRepository.deleteById(id);
     }
 
-    // Regra de negócio
-   private void validarAluno(Aluno aluno) {
+    /* =======================
+       Métodos auxiliares
+       ======================= */
 
-        if(aluno == null) {
-            throw new IllegalArgumentException("Aluno não pode ser nulo");
+    private void validar(AlunoRequest dto) {
+        if (dto.getNome() == null || dto.getNome().isBlank()) {
+            throw new RuntimeException("Nome é obrigatório");
         }
 
-        if(aluno.getNome() == null || aluno.getNome().isBlank()) {
-            throw new IllegalArgumentException("Nome do aluno é obrigatório");
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new RuntimeException("Email é obrigatório");
         }
+    }
 
-        if (aluno.getDataNascimento() == null) {
-            throw new IllegalArgumentException("Data de nascimento é obrigatória");
-        }
+    private AlunoResponse toResponse(Aluno aluno) {
+        AlunoResponse response = new AlunoResponse();
+        response.setId(aluno.getId());
+        response.setNome(aluno.getNome());
+        response.setEmail(aluno.getEmail());
+        response.setDataNascimento(aluno.getDataNascimento());
+        return response;
     }
 }

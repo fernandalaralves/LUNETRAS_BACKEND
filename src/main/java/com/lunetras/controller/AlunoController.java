@@ -1,8 +1,7 @@
-package controller;
+package com.lunetras.controller;
 
 import com.lunetras.dto.AlunoRequest;
 import com.lunetras.dto.AlunoResponse;
-import com.lunetras.model.Aluno;
 import com.lunetras.service.AlunoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +29,13 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Aluno>> listarAlunos() {
+    public ResponseEntity<List<AlunoResponse>> listarAlunos() {
         return ResponseEntity.ok(alunoService.listarTodos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AlunoResponse> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok (alunoService.buscarPorId(id));
+        return ResponseEntity.ok(alunoService.buscarPorId(id));
     }
 
     @DeleteMapping("/{id}")

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class AlunoRequest {
 
     private String nome;
+    private String email;
     private LocalDate dataNascimento;
     private Long turmaId;
 
@@ -27,5 +28,13 @@ public class AlunoRequest {
 
     public void setTurmaId(Long turmaId) {
         this.turmaId = turmaId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
