@@ -17,12 +17,26 @@ public class TurmaService {
         this.turmaRepository = turmaRepository;
     }
 
-    public Turma criar(TurmaRequest request) {
+    public TurmaResponse criar(TurmaRequest request) {
 
-        Turma turma = new Turma();
-        turma.setNome(request.getNome());
-        turma.setTurno(request.getTurno());
+        //rn
+        if(request.getAno() < 1 || request.getAno() > 5) {
+            throw new IllegalArgumentException(
+                    "O ano da turma deve estar entre o primeiro e o quinto ano"
+            );
+        }
 
-        return turmaRepository.save(turma);
+        Turma turma = new Turma(
+                request.getNome(),
+                request.getAno()
+        );
+
+        Turma salva = turmaRepository.save(turma);
+
+        return new TurmaResponse(
+                salva.getId(),
+                salva.getNome(),
+                salva.getAno()
+        );
     }
 }

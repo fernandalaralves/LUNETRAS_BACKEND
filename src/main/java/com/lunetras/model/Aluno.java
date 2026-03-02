@@ -19,10 +19,19 @@ public class Aluno {
 
     private LocalDate dataNascimento;
 
-    private String nome;
-    private LocalDate dataNascimento;
+    //muitos alunos - uma turma
+   @ManyToOne
+   @JoinColumn (name = "turma_id")
+   private Turma turma;
 
+   public Aluno() {
+   }
 
+   public Aluno(String nome, String email, LocalDate dataNascimento) {
+       this.nome = nome;
+       this.email = email;
+       this.dataNascimento = dataNascimento;
+   }
 
     public Long getId() {
         return id;
@@ -56,4 +65,8 @@ public class Aluno {
         this.dataNascimento = dataNascimento;
     }
 
+    //package-private - só a Turma pode chamar
+    void setTurma(Turma turma) {
+       this.turma = turma;
+    }
 }
