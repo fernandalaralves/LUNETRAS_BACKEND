@@ -1,23 +1,22 @@
 package com.lunetras.controller;
 
-import com.lunetras.dto.LoginRequest;
-import com.lunetras.dto.LoginResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.lunetras.model.Usuario;
+import com.lunetras.service.UsuarioService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
-    @PostMapping("/auth/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    private final UsuarioService usuarioService;
 
-        // Simulação de autenticação (mock)
-        LoginResponse response = new LoginResponse();
-        response.setNome("Professor Teste");
-        response.setPerfil("PROFESSOR");
-        response.setToken("token-fake-lunetras");
+    public AuthController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
-        return response;
+    @PostMapping("/register")
+    public ResponseEntity<Usuario> register(@RequestBody Usuario usuario) {
+        return ResponseEntity.ok(usuarioService.cadastrar(usuario));
     }
 }
